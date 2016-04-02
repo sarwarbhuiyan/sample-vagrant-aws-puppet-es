@@ -1,0 +1,24 @@
+# Manage Puppet module dependencies with librarian-puppet
+
+forge 'http://forge.puppetlabs.com'
+
+mod 'supervisor',
+  :git => 'git://github.com/eventbrite/puppet-supervisor.git'
+
+mod 'puppetlabs/git'
+
+mod 'puppetlabs/stdlib'
+
+mod 'puppetlabs/apt'
+
+mod 'puppetlabs/java'
+
+mod 'elasticsearch',
+   :git => 'https://github.com/elastic/puppet-elasticsearch.git'
+
+mod 'richardc/datacat'
+
+mod 'camptocamp/augeas'
+
+mod 'lesaux/puppet-kibana4',
+    :git => 'https://github.com/lesaux/puppet-kibana4.git'

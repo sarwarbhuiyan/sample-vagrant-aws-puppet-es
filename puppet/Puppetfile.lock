@@ -1,0 +1,55 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    camptocamp-archive (0.8.1)
+    camptocamp-augeas (1.4.2)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    ceritsc-yum (0.9.6)
+      puppetlabs-stdlib (>= 4.0.0)
+    puppetlabs-apt (2.2.2)
+      puppetlabs-stdlib (< 5.0.0, >= 4.5.0)
+    puppetlabs-git (0.4.0)
+      puppetlabs-stdlib (>= 3.2.0)
+    puppetlabs-java (1.4.3)
+      puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
+    puppetlabs-stdlib (4.11.0)
+    richardc-datacat (0.6.2)
+
+GIT
+  remote: git://github.com/eventbrite/puppet-supervisor.git
+  ref: master
+  sha: f1fd3cf448c4d20c19931883261ceb271bbf2e32
+  specs:
+    supervisor (0.1.0)
+
+GIT
+  remote: https://github.com/elastic/puppet-elasticsearch.git
+  ref: master
+  sha: 945ca11a3826f1b9573185e49422e9df2ac672da
+  specs:
+    elasticsearch (0.10.3)
+      ceritsc-yum (< 1.0.0, >= 0.9.6)
+      puppetlabs-apt (< 3.0.0, >= 1.4.0)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+      richardc-datacat (< 1.0.0, >= 0.6.2)
+
+GIT
+  remote: https://github.com/lesaux/puppet-kibana4.git
+  ref: master
+  sha: 919ffdaa5ac86fe8414a68332477b61076e941e2
+  specs:
+    lesaux-puppet-kibana4 (1.0.14)
+      camptocamp-archive (< 1.0.0, >= 0.1.0)
+      puppetlabs-apt (< 3.0.0, >= 2.1.0)
+
+DEPENDENCIES
+  camptocamp-augeas (>= 0)
+  elasticsearch (>= 0)
+  lesaux-puppet-kibana4 (>= 0)
+  puppetlabs-apt (>= 0)
+  puppetlabs-git (>= 0)
+  puppetlabs-java (>= 0)
+  puppetlabs-stdlib (>= 0)
+  richardc-datacat (>= 0)
+  supervisor (>= 0)
+
