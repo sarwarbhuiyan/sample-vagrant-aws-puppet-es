@@ -1,8 +1,15 @@
+include apt
+
 exec { "apt-get update":
-  path => "/usr/bin",
+    command => "/usr/bin/apt-get update",
 }
 
-include apt
+apt::key { "elasticsearch":
+       id => "0xd27d666cd88e42b4",
+       ensure => present,
+       source => "https://packages.elastic.co/GPG-KEY-elasticsearch",
+  
+}
 
 apt::source { "elasticsearch_repo":
         location        => "http://packages.elastic.co/elasticsearch/2.x/debian",
@@ -11,15 +18,11 @@ apt::source { "elasticsearch_repo":
         include     => { src => false },
 }
 
-class { "elasticsearch": 
-  version => '2.3.0',
-  java_install => true,
-  require => Exec["apt-get update"],
-}
+include java
 
-package { "apache2": 
-  ensure => present,
-  require => Exec["apt-get update"],
+class { "elasticsearch": 
+  version => '2.3.1',
+  require => Exec['apt-get update']
 }
 
 elasticsearch::instance { 'es-01':
