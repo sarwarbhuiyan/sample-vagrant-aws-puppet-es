@@ -27,7 +27,10 @@ class { "elasticsearch":
 
 elasticsearch::instance { 'es-01':
   config => {
-    'network.host' => '0.0.0.0'
+    'network.bind_host' => '0.0.0.0',
+    'http.publish_host' => '127.0.0.1',
+    'http.publish_port' => 3000,
+    'indices.memory.index_buffer_size' => '512mb'
   },
   init_defaults => {
     'ES_HEAP_SIZE' => '4g'
