@@ -1,62 +1,117 @@
-include apt
+class base {
+  include stdlib
 
-exec { "apt-get update":
-    command => "/usr/bin/apt-get update",
+  notice("Hello from ${hostname}")
+
 }
 
-apt::key { "elasticsearch":
+node /^.*elasticsearch\d+$/ {
+  include base
+  include apt
+
+  exec { "apt-get update":
+    command => "/usr/bin/apt-get update",
+  }
+
+  apt::key { "elasticsearch":
        id => "0xd27d666cd88e42b4",
        ensure => present,
        source => "https://packages.elastic.co/GPG-KEY-elasticsearch",
-  
-}
 
-apt::source { "elasticsearch_repo":
+  }
+
+  apt::source { "elasticsearch_repo":
         location        => "http://packages.elastic.co/elasticsearch/2.x/debian",
         release         => "stable",
         repos           => " main",
         include     => { src => false },
+  }
+
+  class { 'java':
+    distribution => 'jdk',
+  }
+
+  class { "elasticsearch":
+    version => '2.3.4',
+    manage_repo => true,
+    repo_version => '2.x',
+    require => Exec['apt-get update']
+  } 
+
+  elasticsearch::instance { 'es-01':
+    config => {
+      'node.name' => $node_name,
+      'network.host' => '_ec2_',
+      'indices.memory.index_buffer_size' => '512mb',
+      'cluster.name' => 'sarwar-test-es',
+      "cloud" => {
+          "aws" => {
+            "region"     => 'us-east-1',
+            # Provided by Facter via Vagrant
+            "access_key" => $aws_access_key_id,
+            "secret_key" => $aws_secret_key,
+          }
+        },
+      "discovery"  => {
+          "type" => 'ec2',
+          "ec2" => {
+            "groups" => "sarwar-elasticsearch-sg-sa",
+            "tag" => {
+              "node_type" => 'elasticsearch',
+            }
+	  }
+      },
+    },
+    init_defaults => {
+      'ES_HEAP_SIZE' => '1g'
+    },
+  }
+
+  elasticsearch::plugin { 'license':
+    instances => 'es-01',
+  }
+
+  elasticsearch::plugin { 'marvel-agent':
+    instances => 'es-01',
+    require => Elasticsearch_plugin['license'],
+  }
+
+  elasticsearch::plugin { 'graph':
+    instances => 'es-01',
+    require => Elasticsearch_plugin['license'],
+  }
+
+  elasticsearch::plugin { 'cloud-aws': 
+    instances => 'es-01',
+  }
+
 }
 
-include java
+node /^.*kibana\d+$/ {
+ 
+ include base
+ include apt
 
-class { "elasticsearch": 
-  version => '2.3.1',
-  require => Exec['apt-get update']
-}
+   exec { "apt-get update":
+    command => "/usr/bin/apt-get update",
+  }
 
-elasticsearch::instance { 'es-01':
-  config => {
-    'network.bind_host' => '0.0.0.0',
-    'http.publish_host' => '127.0.0.1',
-    'http.publish_port' => 3000,
-    'indices.memory.index_buffer_size' => '512mb'
-  },
-  init_defaults => {
-    'ES_HEAP_SIZE' => '4g'
-  },
-}
+  apt::key { "elasticsearch":
+       id => "0xd27d666cd88e42b4",
+       ensure => present,
+       source => "https://packages.elastic.co/GPG-KEY-elasticsearch",
 
-elasticsearch::plugin { 'lmenezes/elasticsearch-kopf':
-  instances => 'es-01',
-}
+  }
 
-elasticsearch::plugin { 'license':
-  instances => 'es-01',
-}
+  apt::source { "elasticsearch_repo":
+        location        => "http://packages.elastic.co/elasticsearch/2.x/debian",
+        release         => "stable",
+        repos           => " main",
+        include     => { src => false },
+  }
 
-elasticsearch::plugin { 'marvel-agent':
-  instances => 'es-01',
-  require => Elasticsearch_plugin['license'],
-}
-
-elasticsearch::plugin { 'graph':
-  instances => 'es-01',
-  require => Elasticsearch_plugin['license'],
-}
-
-class { '::kibana4':
-    version           => '4.5.0-linux-x64',
+  class { '::kibana4':
+    version           => '4.5.4-linux-x64',
     install_method    => 'archive',
     archive_symlink   => true,
     manage_user       => true,
@@ -78,11 +133,11 @@ class { '::kibana4':
            ensure          => present,
            plugin_dest_dir => 'sense',
         },
-	'elasticsearch/graph/latest' => {
+        'elasticsearch/graph/latest' => {
            ensure          => present,
            plugin_dest_dir => 'graph',
         }
       }
   }
 
-
+}

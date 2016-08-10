@@ -9,6 +9,10 @@ mod 'puppetlabs/git'
 
 mod 'puppetlabs/stdlib'
 
+mod 'puppetlabs/ntp'
+
+mod 'puppetlabs/firewall'
+
 mod 'puppetlabs/apt'
 
 mod 'puppetlabs/java'
